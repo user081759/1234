@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, height=device-height">
+<title>Bloqueado</title>
+<style>
+    /* Estilos Base */
+    * {
+        box-sizing: border-box;
+        user-select: none; /* Evita seleccionar texto */
+        -webkit-tap-highlight-color: transparent; /* Quita el flash azul al tocar */
+    }
+
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden; /* Sin scroll */
+        background-color: #000;
+        font-family: 'Roboto', sans-serif;
+        touch-action: none; /* Bloquea gestos del navegador */
+    }
+
+    /* La Ventana del Ransomware */
+    #ransomware {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: linear-gradient(135deg, #1a0000 0%, #000000 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 2147483647; /* Valor máximo posible */
+        transition: opacity 0.5s ease;
+    }
+
+    /* Icono de Candado */
+    .icon {
+        font-size: 80px;
+        color: #ff3333;
+        margin-bottom: 20px;
+        text-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+    }
+
+    h1 {
+        color: #fff;
+        font-size: 24px;
+        margin: 0 0 10px 0;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+    }
+
+    p {
+        color: #aaa;
+        font-size: 14px;
+        text-align: center;
+        padding: 0 20px;
+        margin-bottom: 30px;
+    }
+
+    /* Inputs y Botones */
+    input[type="text"], input[type="password"] {
+        width: 80%;
+        padding: 15px;
+        font-size: 18px;
+        text-align: center;
+        border: 2px solid #444;
+        background-color: #111;
+        color: #fff;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        outline: none;
+    }
+
+    input:focus {
+        border-color: #ff3333;
+        box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+    }
+
+    button#unlock {
+        width: 80%;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        background-color: #b30000;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        box-shadow: 0 4px 15px rgba(179, 0, 0, 0.4);
+    }
+
+    button#unlock:active {
+        transform: scale(0.98);
+        background-color: #800000;
+    }
+
+    /* Botón X de Cierre */
+    .close-btn {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 40px;
+        height: 40px;
+        background-color: rgba(0,0,0,0.6);
+        border: 1px solid #ff3333;
+        border-radius: 50%;
+        color: #ff3333;
+        font-size: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        z-index: 100;
+        font-weight: bold;
+    }
+
+    .close-btn:active {
+        background-color: #ff3333;
+        color: #000;
+    }
+
+    /* Mensaje de Error */
+    .error-msg {
+        color: #ff3333;
+        font-size: 12px;
+        height: 18px;
+        margin-top: 10px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    /* Animación de salida */
+    .unlocked {
+        opacity: 0;
+    }
+</style>
+</head>
+<body>
+
+    <div id="ransomware">
+        <!-- Botón X -->
+        <div class="close-btn" id="btn-close">✕</div>
+
+        <div class="icon">🔒</div>
+        <h1>SISTEMA BLOQUEADO</h1>
+        <p>Se han encriptado sus archivos personales. Introduzca la clave de descifrado para restaurar el acceso.</p>
+
+        <input type="password" id="passInput" placeholder="Contraseña" inputmode="numeric" pattern="[0-9]*">
+        <button id="btn-unlock">DESBLOQUEAR</button>
+        <div class="error-msg" id="errorMsg">Clave incorrecta</div>
+    </div>
+
+<script>
+    // Configuración
+    const CORRECT_PASS = "28706587";
+    const ransom = document.getElementById('ransomware');
+    const input = document.getElementById('passInput');
+    const btnUnlock = document.getElementById('btn-unlock');
+    const btnClose = document.getElementById('btn-close');
+    const errorMsg = document.getElementById('errorMsg');
+
+    // Función para pantalla completa real
+    function requestFull() {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen().catch(err => {});
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        }
+    }
+
+    // Intentar fullscreen al cargar y al tocar pantalla
+    document.addEventListener('DOMContentLoaded', requestFull);
+    document.addEventListener('click', requestFull);
+    
+    // Si la pantalla se despierta, intentar fullscreen de nuevo
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) requestFull();
+    });
+
+    // Función de desbloqueo
+    function unlockSystem() {
+        ransom.classList.add('unlocked');
+        
+        // Salir de pantalla completa suavemente
+        if (document.exitFullscreen) {
+            document.exitFullscreen().catch(err => {});
+        }
+
+        // Esperar a que termine la animación para ocultar
+        setTimeout(() => {
+            ransom.style.display = 'none';
+        }, 500);
+    }
+
+    // Lógica del botón X (Funciona como alternativa)
+    btnClose.addEventListener('click', () => {
+        unlockSystem();
+    });
+
+    // Lógica del botón Desbloquear
+    btnUnlock.addEventListener('click', () => {
+        if (input.value === CORRECT_PASS) {
+            unlockSystem();
+        } else {
+            // Error
+            errorMsg.style.opacity = '1';
+            input.value = '';
+            input.focus();
+            
+            // Vibrar el teléfono
+            if (navigator.vibrate) {
+                navigator.vibrate([100, 50, 100]);
+            }
+
+            // Ocultar error después de 2 segundos
+            setTimeout(() => {
+                errorMsg.style.opacity = '0';
+            }, 2000);
+        }
+    });
+
+    // Permitir Enter para desbloquear
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            btnUnlock.click();
+        }
+    });
+
+    // Evitar que el teclado oculte el contenido o se pueda salir fácil
+    input.addEventListener('blur', () => {
+        // Si sale del input, volver a ponerlo focus si no se ha desbloqueado
+        if (ransom.style.display !== 'none') {
+            // Opcional: input.focus();
+        }
+    });
+
+</script>
+</body>
+</html>
